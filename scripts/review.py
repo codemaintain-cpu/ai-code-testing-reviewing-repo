@@ -12,6 +12,14 @@ def ai_review(code):
         ],
         temperature=0.2,
     )
+    print("\n🧠 AI REVIEW RESULT:\n")
+
+    for item in response.output:
+        if item["type"] == "message":
+            for content in item["content"]:
+                if content["type"] == "output_text":
+                    print(content["text"])
+
     review_text = response.choices[0].message.content
     print("\n🧠 AI REVIEW RESULT:\n")
     print(review_text)
