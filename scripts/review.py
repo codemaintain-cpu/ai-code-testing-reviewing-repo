@@ -20,3 +20,11 @@ def ai_review(code):
     print("\n" + "-" * 60 + "\n")
 
     return review_text
+
+
+# 🔽 THIS IS THE IMPORTANT PART 🔽
+if __name__ == "__main__":
+    with open("buggy_example.py", "r", encoding="utf-8") as f:
+        code = f.read()
+
+    ai_review(code)
