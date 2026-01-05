@@ -12,4 +12,9 @@ def ai_review(code):
         ],
         temperature=0.2,
     )
-    return response.choices[0].message.content
+    review_text = response.choices[0].message.content
+    print("\n🧠 AI REVIEW RESULT:\n")
+    print(review_text)
+    print("\n" + "-"*60 + "\n")
+    return review_text
+
