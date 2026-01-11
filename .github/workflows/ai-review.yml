@@ -2,26 +2,27 @@ name: AI Code Review (Mock)
 
 on:
   pull_request:
-    types: [ opened, syncronize ]
+    types: [opened, synchronize]
+
+permissions:
+  pull-requests: write
+  contents: read
 
 jobs:
   review:
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-      
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
 
-      - name: Run Mock AI Review
-        run: |
-          python scripts/review.py
-
-    
-
+    - name: Run Mock AI Review
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        python scripts/review.py
