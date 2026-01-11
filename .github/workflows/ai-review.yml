@@ -1,4 +1,4 @@
-name: AI Code Review
+name: AI Code Review (Mock)
 
 on:
   push:
@@ -9,20 +9,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.10'
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
 
-    - name: Install dependencies
-      run: |
-        pip install openai
-
-    - name: Run AI review
-      env:
-        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-      run: |
-        python scripts/review.py
+      - name: Run Mock AI Review
+        run: |
+          python scripts/review.py
