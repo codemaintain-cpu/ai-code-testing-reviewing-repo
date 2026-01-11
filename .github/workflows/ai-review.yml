@@ -7,7 +7,9 @@ on:
 jobs:
   review:
     runs-on: ubuntu-latest
-
+    permissions:
+      pull-requests: write
+      
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -20,3 +22,6 @@ jobs:
       - name: Run Mock AI Review
         run: |
           python scripts/review.py
+
+    
+
