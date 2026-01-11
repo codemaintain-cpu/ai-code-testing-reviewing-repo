@@ -1,30 +1,44 @@
-from openai import OpenAI
 import os
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+def ai_review(code: str) -> str:
+    feedback = []
 
-def ai_review(code):
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[
-            {"role": "system", "content": "You are an expert code reviewer."},
-            {"role": "user", "content": f"Review this code and suggest improvements:\n\n{code}"}
-        ],
-        temperature=0.2,
-    )
+    # Basic checks
+    if "print(" in code:
+        feedback.append("• Avoid leaving debug print statements in production code.")
 
-    review_text = response.choices[0].message.content
+    if "def " in code and ":" not in code.split("def")[1]:
+        feedback.append("• Function definition might be missing a colon `:`.")
 
-    print("\n🧠 AI REVIEW RESULT:\n")
-    print(review_text)
-    print("\n" + "-" * 60 + "\n")
+    if "return" not in code:
+        feedback.append("• Function does not return anything. Consider returning a value.")
 
-    return review_text
+    if not feedback:
+        feedback.append("• Code looks clean. No obvious issues found.")
+
+    return "\n".join(feedback)
 
 
-# 🔽 THIS IS THE IMPORTANT PART 🔽
+def main():
+    print("\n🧠 AI CODE REVIEW (Mock Mode)\n" + "-" * 40)
+
+    for root, dirs, files in os.walk("."):
+        if ".git" in root or "venv" in root:
+            continue
+
+        for file in files:
+            if file.endswith(".py"):
+                path = os.path.join(root, file)
+
+                print(f"\n📄 Reviewing: {path}\n")
+
+                with open(path, "r", encoding="utf-8") as f:
+                    code = f.read()
+
+                review = ai_review(code)
+                print(review)
+                print("\n" + "-" * 40)
+
+
 if __name__ == "__main__":
-    with open("buggy_example.py", "r", encoding="utf-8") as f:
-        code = f.read()
-
-    ai_review(code)
+    main()
