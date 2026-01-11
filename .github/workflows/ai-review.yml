@@ -1,8 +1,8 @@
 name: AI Code Review (Mock)
 
 on:
-  push:
-    branches: [ "main" ]
+  pull_request:
+    types: [ opened, syncronize ]
 
 jobs:
   review:
