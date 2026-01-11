@@ -1,4 +1,2 @@
-def add(a,b)
-    x=5
-    print(x)
+def add(a, b):
     return a + b
