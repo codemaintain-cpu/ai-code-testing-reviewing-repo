@@ -1,44 +1,56 @@
 import os
+import requests
 
-def ai_review(code: str) -> str:
-    feedback = []
+GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+GITHUB_EVENT_PATH = os.getenv("GITHUB_EVENT_PATH")
 
-    # Basic checks
-    if "print(" in code:
-        feedback.append("• Avoid leaving debug print statements in production code.")
+def post_pr_comment(body):
+    if not GITHUB_EVENT_PATH:
+        print("Not running in a PR context")
+        return
 
-    if "def " in code and ":" not in code.split("def")[1]:
-        feedback.append("• Function definition might be missing a colon `:`.")
+    import json
+    with open(GITHUB_EVENT_PATH, "r") as f:
+        event = json.load(f)
 
-    if "return" not in code:
-        feedback.append("• Function does not return anything. Consider returning a value.")
+    pr = event.get("pull_request")
+    if not pr:
+        print("No pull request found")
+        return
 
-    if not feedback:
-        feedback.append("• Code looks clean. No obvious issues found.")
+    comments_url = pr["comments_url"]
 
-    return "\n".join(feedback)
+    headers = {
+        "Authorization": f"Bearer {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github+json"
+    }
+
+    response = requests.post(
+        comments_url,
+        headers=headers,
+        json={"body": body}
+    )
+
+    if response.status_code == 201:
+        print("✅ Comment posted on PR")
+    else:
+        print("❌ Failed to post comment:", response.text)
 
 
-def main():
-    print("\n🧠 AI CODE REVIEW (Mock Mode)\n" + "-" * 40)
+def run_review():
+    review_output = []
+    review_output.append("🧠 **AI Code Review (Mock Mode)**\n")
 
-    for root, dirs, files in os.walk("."):
-        if ".git" in root or "venv" in root:
-            continue
+    # Mock findings
+    review_output.append("📄 **buggy_example.py**")
+    review_output.append("- Missing colon `:` in function definition")
+    review_output.append("- Avoid leaving debug `print()` statements\n")
 
-        for file in files:
-            if file.endswith(".py"):
-                path = os.path.join(root, file)
+    comment_body = "\n".join(review_output)
+    print(comment_body)
 
-                print(f"\n📄 Reviewing: {path}\n")
-
-                with open(path, "r", encoding="utf-8") as f:
-                    code = f.read()
-
-                review = ai_review(code)
-                print(review)
-                print("\n" + "-" * 40)
+    post_pr_comment(comment_body)
 
 
 if __name__ == "__main__":
-    main()
+    run_review()
